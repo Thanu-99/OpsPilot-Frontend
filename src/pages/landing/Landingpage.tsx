@@ -18,7 +18,6 @@ import { Link } from "react-router-dom";
 
 import HeroVideo from "../../components/landing/HeroVideo";
 import Sidebar from "../../components/layout/Sidebar";
-import ThemeToggle from "../../components/ui/ThemeToggle";
 
 const productFeatures = [
   {
@@ -103,7 +102,7 @@ function LandingPage() {
             </Link>
           </div>
 
-          <div className="hidden items-center gap-7 text-sm text-zinc-300 lg:flex">
+          <div className="hidden items-center gap-7 text-sm text-zinc-300 md:flex">
             <a className="transition hover:text-white" href="#product">
               Product
             </a>
@@ -116,8 +115,6 @@ function LandingPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <ThemeToggle />
-
             <Link
               to="/login"
               className="hidden text-sm font-medium text-zinc-300 transition hover:text-white sm:block"
@@ -141,7 +138,7 @@ function LandingPage() {
             <HeroVideo />
           </div>
 
-          <div className="theme-hero-scrim pointer-events-none absolute inset-0" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,#09090b_0%,#09090b_37%,rgba(9,9,11,0.83)_48%,rgba(9,9,11,0.16)_72%,rgba(9,9,11,0.05)_100%)]" />
 
           <div className="relative z-10 mx-auto flex min-h-[760px] max-w-7xl items-center px-5 pb-16 pt-28 sm:px-8 lg:min-h-screen lg:pt-20">
             <motion.div

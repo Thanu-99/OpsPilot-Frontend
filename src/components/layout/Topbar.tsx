@@ -10,7 +10,6 @@ import {
 } from "../../lib/notifications";
 import type { AppNotification } from "../../lib/notifications";
 import { getCurrentUser } from "../../lib/session";
-import ThemeToggle from "../ui/ThemeToggle";
 
 type TopbarProps = {
   onMenuClick: () => void;
@@ -182,8 +181,6 @@ function Topbar({ onMenuClick }: TopbarProps) {
               className="w-full bg-transparent text-sm text-zinc-200 outline-none placeholder:text-zinc-600"
             />
           </div>
-
-          <ThemeToggle />
 
           <div className="relative">
             <button
