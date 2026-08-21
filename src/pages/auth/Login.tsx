@@ -153,6 +153,16 @@ function Login() {
               <ArrowRight size={16} />
             </button>
           </form>
+
+          <p className="mt-6 text-center text-sm text-zinc-400">
+            New to OpsPilot?{" "}
+            <Link
+              to="/register"
+              className="font-semibold text-violet-300 transition hover:text-violet-200"
+            >
+              Create an account
+            </Link>
+          </p>
         </div>
 
         <p className="mt-6 text-center text-xs text-zinc-600">

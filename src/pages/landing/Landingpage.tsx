@@ -116,18 +116,18 @@ function LandingPage() {
 
           <div className="flex items-center gap-3">
             <Link
-              to="/incidents"
+              to="/login"
               className="hidden text-sm font-medium text-zinc-300 transition hover:text-white sm:block"
             >
               Sign in
             </Link>
 
-            <a
-              href="#product"
+            <Link
+              to="/register"
               className="inline-flex items-center justify-center rounded-lg bg-white px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
             >
               Get started
-            </a>
+            </Link>
           </div>
         </nav>
       </header>
@@ -169,13 +169,13 @@ function LandingPage() {
               </p>
 
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href="#product"
+                <Link
+                  to="/register"
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-400"
                 >
                   Start building
                   <ArrowRight size={16} />
-                </a>
+                </Link>
 
                 <a
                   href="#how-it-works"
@@ -411,13 +411,13 @@ function LandingPage() {
                 </p>
               </div>
 
-              <a
-                href="#product"
+              <Link
+                to="/register"
                 className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-white px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
               >
                 Get started
                 <ArrowRight size={16} />
-              </a>
+              </Link>
             </div>
           </div>
         </section>
