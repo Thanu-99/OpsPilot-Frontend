@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { login, saveToken } from "../../lib/api";
 import { getWorkspacePath, saveCurrentUser } from "../../lib/session";
+import ThemeToggle from "../../components/ui/ThemeToggle";
 
 function Login() {
   const navigate = useNavigate();
@@ -67,6 +68,8 @@ function Login() {
 
   return (
     <div className="relative grid min-h-screen place-items-center overflow-hidden bg-[#09090b] px-5 py-10 text-zinc-100">
+      <ThemeToggle className="absolute right-5 top-5 z-20" />
+
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(124,58,237,0.18),transparent_32%),linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:auto,72px_72px,72px_72px]"
