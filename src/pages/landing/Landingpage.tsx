@@ -212,8 +212,9 @@ function LandingPage() {
                 const Icon = feature.icon;
 
                 return (
-                  <div
+                  <Link
                     key={feature.title}
+                    to="/login"
                     className="group rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 transition hover:border-violet-400/25 hover:bg-white/[0.045]"
                   >
                     <span className="grid size-10 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-violet-300 transition group-hover:bg-violet-500/10">
@@ -232,7 +233,7 @@ function LandingPage() {
                       Explore feature
                       <ArrowUpRight size={15} />
                     </span>
-                  </div>
+                  </Link>
                 );
               })}
             </div>
