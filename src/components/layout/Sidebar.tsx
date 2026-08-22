@@ -5,9 +5,11 @@ import {
   ClipboardCheck,
   Command,
   LayoutDashboard,
+  LogIn,
   LogOut,
   Package,
   ShieldAlert,
+  UserPlus,
   UsersRound,
   X,
 } from "lucide-react";
@@ -60,18 +62,12 @@ function roleLabel(role: CurrentUser["role"]) {
 function Sidebar({ isOpen = true, onClose }: SidebarProps) {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
-  const user =
-    currentUser ??
-    ({
-      userId: 0,
-      firstName: "OpsPilot",
-      lastName: "User",
-      role: "ADMIN",
-      companyId: 0,
-    } satisfies CurrentUser);
-
-  const navigation = navigationByRole[user.role];
-  const initials = `${user.firstName[0] ?? ""}${user.lastName[0] ?? ""}`;
+  const navigation = currentUser
+    ? navigationByRole[currentUser.role]
+    : [];
+  const initials = currentUser
+    ? `${currentUser.firstName[0] ?? ""}${currentUser.lastName[0] ?? ""}`
+    : "";
 
   function closeSidebar() {
     onClose?.();
@@ -120,8 +116,9 @@ function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           Workspace
         </p>
 
-        <nav className="space-y-1">
-          {navigation.map((item) => {
+        {currentUser ? (
+          <nav className="space-y-1">
+            {navigation.map((item) => {
             const Icon = item.icon;
 
             return (
@@ -149,12 +146,24 @@ function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 )}
               </NavLink>
             );
-          })}
-        </nav>
+            })}
+          </nav>
+        ) : (
+          <div className="rounded-xl border border-white/[0.08] bg-white/[0.035] p-4">
+            <p className="text-sm font-medium text-white">
+              Your workspace awaits
+            </p>
+            <p className="mt-1.5 text-xs leading-5 text-zinc-400">
+              Sign in to access your role-based dashboard, work, and AI
+              Copilot.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="mt-auto">
-        <div className="mb-5 rounded-xl border border-white/[0.08] bg-white/[0.035] p-3.5">
+        {currentUser ? (
+          <div className="mb-5 rounded-xl border border-white/[0.08] bg-white/[0.035] p-3.5">
           <div className="flex items-start gap-2.5">
             <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-md bg-violet-500/15 text-violet-300">
               <Bot size={15} />
@@ -176,29 +185,55 @@ function Sidebar({ isOpen = true, onClose }: SidebarProps) {
             Open Copilot
             <ChevronRight size={14} />
           </NavLink>
-        </div>
+          </div>
+        ) : null}
 
         <div className="my-3 border-t border-white/[0.08]" />
 
-        <button
-          onClick={handleSignOut}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium text-zinc-300 transition hover:bg-rose-500/[0.08] hover:text-rose-300"
-        >
-          <LogOut size={18} className="text-zinc-400" />
-          Sign out
-        </button>
+        {currentUser ? (
+          <>
+            <button
+              onClick={handleSignOut}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium text-zinc-300 transition hover:bg-rose-500/[0.08] hover:text-rose-300"
+            >
+              <LogOut size={18} className="text-zinc-400" />
+              Sign out
+            </button>
 
-        <div className="mt-2 flex items-center gap-2.5 rounded-lg px-3 py-2.5">
-          <span className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 text-xs font-semibold text-white">
-            {initials.toUpperCase()}
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-white">
-              {user.firstName} {user.lastName}
-            </p>
-            <p className="text-[11px] text-zinc-400">{roleLabel(user.role)}</p>
+            <div className="mt-2 flex items-center gap-2.5 rounded-lg px-3 py-2.5">
+              <span className="grid size-8 place-items-center rounded-full bg-gradient-to-br from-violet-400 to-indigo-600 text-xs font-semibold text-white">
+                {initials.toUpperCase()}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-white">
+                  {currentUser.firstName} {currentUser.lastName}
+                </p>
+                <p className="text-[11px] text-zinc-400">
+                  {roleLabel(currentUser.role)}
+                </p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-2">
+            <NavLink
+              to="/login"
+              onClick={closeSidebar}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200"
+            >
+              <LogIn size={17} />
+              Sign in
+            </NavLink>
+            <NavLink
+              to="/register"
+              onClick={closeSidebar}
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.04] px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.08] hover:text-white"
+            >
+              <UserPlus size={17} />
+              Create account
+            </NavLink>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
