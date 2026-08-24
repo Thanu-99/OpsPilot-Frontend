@@ -212,12 +212,15 @@ async function request<T>(
   options: RequestInit = {},
 ): Promise<T> {
   const token = getToken();
+  const isAuthenticationRequest = path.startsWith(
+    "/api/v1/auth/",
+  );
 
   const response = await fetch(apiUrl(path), {
     ...options,
     headers: {
       "Content-Type": "application/json",
-      ...(token
+      ...(token && !isAuthenticationRequest
         ? { Authorization: `Bearer ${token}` }
         : {}),
       ...options.headers,
