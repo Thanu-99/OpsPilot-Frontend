@@ -145,8 +145,12 @@ type BackendErrorResponse = {
 
 const TOKEN_KEY = "opspilot_token";
 
+const PRODUCTION_API_BASE_URL =
+  "https://opspilot-backend-7p2j.onrender.com";
+
 const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL ?? ""
+  import.meta.env.VITE_API_BASE_URL ??
+  (import.meta.env.PROD ? PRODUCTION_API_BASE_URL : "")
 ).replace(/\/$/, "");
 
 export function apiUrl(path: string) {
