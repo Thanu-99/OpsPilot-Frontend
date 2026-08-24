@@ -10,7 +10,13 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { login, saveToken } from "../../lib/api";
+import GoogleSignInButton from "../../components/auth/GoogleSignInButton";
+import {
+  googleLogin,
+  login,
+  saveToken,
+  type AuthResponse,
+} from "../../lib/api";
 import { getWorkspacePath, saveCurrentUser } from "../../lib/session";
 
 function Login() {
@@ -22,6 +28,33 @@ function Login() {
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  function completeAuthentication(response: AuthResponse) {
+    if (
+      !response.token ||
+      !response.role ||
+      !response.userId ||
+      !response.firstName ||
+      !response.lastName ||
+      !response.companyId
+    ) {
+      throw new Error(
+        "The server did not return your workspace details. Please try again.",
+      );
+    }
+
+    saveToken(response.token);
+
+    saveCurrentUser({
+      userId: response.userId,
+      firstName: response.firstName,
+      lastName: response.lastName,
+      role: response.role,
+      companyId: response.companyId,
+    });
+
+    navigate(getWorkspacePath(response.role), { replace: true });
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setErrorMessage("");
@@ -29,36 +62,30 @@ function Login() {
 
     try {
       const response = await login(email, password);
-
-      if (
-        !response.token ||
-        !response.role ||
-        !response.userId ||
-        !response.firstName ||
-        !response.lastName ||
-        !response.companyId
-      ) {
-        throw new Error(
-          "The server did not return your workspace details. Restart Spring Boot and try again.",
-        );
-      }
-
-      saveToken(response.token);
-
-      saveCurrentUser({
-        userId: response.userId,
-        firstName: response.firstName,
-        lastName: response.lastName,
-        role: response.role,
-        companyId: response.companyId,
-      });
-
-      navigate(getWorkspacePath(response.role), { replace: true });
+      completeAuthentication(response);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
           ? error.message
           : "Unable to sign in. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleGoogleCredential(credential: string) {
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await googleLogin(credential);
+      completeAuthentication(response);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to sign in with Google. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -95,7 +122,26 @@ function Login() {
             </p>
           </div>
 
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <div className="mt-8">
+            <GoogleSignInButton
+              text="signin_with"
+              disabled={isSubmitting}
+              onCredential={(credential) =>
+                void handleGoogleCredential(credential)
+              }
+              onError={setErrorMessage}
+            />
+          </div>
+
+          <div className="my-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/[0.08]" />
+            <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-600">
+              or continue with email
+            </span>
+            <span className="h-px flex-1 bg-white/[0.08]" />
+          </div>
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <label className="block">
               <span className="mb-2 block text-sm font-medium text-zinc-300">
                 Email address

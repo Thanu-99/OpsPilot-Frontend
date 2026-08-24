@@ -258,6 +258,20 @@ export function register(payload: RegisterPayload) {
   });
 }
 
+export function googleLogin(credential: string) {
+  return request<AuthResponse>("/api/v1/auth/google/login", {
+    method: "POST",
+    body: JSON.stringify({ credential }),
+  });
+}
+
+export function googleRegister(credential: string) {
+  return request<AuthResponse>("/api/v1/auth/google/register", {
+    method: "POST",
+    body: JSON.stringify({ credential }),
+  });
+}
+
 export function getDashboardSummary() {
   return request<DashboardSummary>(
     "/api/v1/dashboard/summary",

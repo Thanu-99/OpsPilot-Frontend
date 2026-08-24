@@ -12,7 +12,13 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { register, saveToken } from "../../lib/api";
+import GoogleSignInButton from "../../components/auth/GoogleSignInButton";
+import {
+  googleRegister,
+  register,
+  saveToken,
+  type AuthResponse,
+} from "../../lib/api";
 import { getWorkspacePath, saveCurrentUser } from "../../lib/session";
 
 function Register() {
@@ -27,6 +33,33 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  function completeAuthentication(response: AuthResponse) {
+    if (
+      !response.token ||
+      !response.role ||
+      !response.userId ||
+      !response.firstName ||
+      !response.lastName ||
+      !response.companyId
+    ) {
+      throw new Error(
+        "The server did not return your workspace details. Please try again.",
+      );
+    }
+
+    saveToken(response.token);
+
+    saveCurrentUser({
+      userId: response.userId,
+      firstName: response.firstName,
+      lastName: response.lastName,
+      role: response.role,
+      companyId: response.companyId,
+    });
+
+    navigate(getWorkspacePath(response.role), { replace: true });
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,36 +83,30 @@ function Register() {
         role,
         companyId: parsedCompanyId,
       });
-
-      if (
-        !response.token ||
-        !response.role ||
-        !response.userId ||
-        !response.firstName ||
-        !response.lastName ||
-        !response.companyId
-      ) {
-        throw new Error(
-          "The server did not return your workspace details. Restart Spring Boot and try again.",
-        );
-      }
-
-      saveToken(response.token);
-
-      saveCurrentUser({
-        userId: response.userId,
-        firstName: response.firstName,
-        lastName: response.lastName,
-        role: response.role,
-        companyId: response.companyId,
-      });
-
-      navigate(getWorkspacePath(response.role), { replace: true });
+      completeAuthentication(response);
     } catch (error) {
       setErrorMessage(
         error instanceof Error
           ? error.message
           : "Unable to create your account. Please try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleGoogleCredential(credential: string) {
+    setErrorMessage("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await googleRegister(credential);
+      completeAuthentication(response);
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Unable to continue with Google. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -116,7 +143,29 @@ function Register() {
             Create your account, then enter your operations workspace.
           </p>
 
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <div className="mt-8">
+            <GoogleSignInButton
+              text="signup_with"
+              disabled={isSubmitting}
+              onCredential={(credential) =>
+                void handleGoogleCredential(credential)
+              }
+              onError={setErrorMessage}
+            />
+            <p className="mt-3 text-center text-xs leading-5 text-zinc-500">
+              Google signup creates your own private OpsPilot workspace.
+            </p>
+          </div>
+
+          <div className="my-6 flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/[0.08]" />
+            <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-zinc-600">
+              or register with email
+            </span>
+            <span className="h-px flex-1 bg-white/[0.08]" />
+          </div>
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-2 block text-sm font-medium text-zinc-300">
